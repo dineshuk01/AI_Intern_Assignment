@@ -7,13 +7,9 @@ import json
 import docx
 import PyPDF2
 from io import StringIO
-
-# LangChain imports
 from langchain.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import HumanMessage
-
-# LangGraph imports
 from langgraph.graph import Graph, StateGraph, END
 from langgraph.graph.message import add_messages
 from typing_extensions import Annotated, TypedDict
@@ -50,16 +46,16 @@ class EssayEditor:
         self.setup_graph()
         
     def setup_openai(self):
-        """Initialize OpenAI client"""
-        api_key = os.getenv('OPENAI_API_KEY')
+        """Initialize Google Gemini client"""
+        api_key = os.getenv('GOOGLE_API_KEY')
         if not api_key:
-            print("Error: Please set OPENAI_API_KEY environment variable")
+            print("Error: Please set GOOGLE_API_KEY environment variable")
             sys.exit(1)
         
-        self.llm = ChatOpenAI(
-            model="gpt-4o-mini",  # Using GPT-4o-mini for cost efficiency
+        self.llm = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash-exp",
             temperature=0.3,
-            api_key=api_key
+            google_api_key=api_key
         )
     
     def setup_prompts(self):
@@ -503,19 +499,20 @@ def main():
     try:
         import langchain
         import langgraph
-        import openai
+        import google.generativeai
         import docx
         import PyPDF2
     except ImportError as e:
         print(f"Missing required dependency: {e}")
         print("Please install required packages:")
-        print("pip install langchain langgraph openai python-docx PyPDF2")
+        print("pip install langchain langgraph langchain-google-genai google-generativeai python-docx PyPDF2")
         sys.exit(1)
     
-    # Check for OpenAI API key
-    if not os.getenv('OPENAI_API_KEY'):
-        print("Please set your OpenAI API key:")
-        print("export OPENAI_API_KEY='your-api-key-here'")
+    # Check for Google API key
+    if not os.getenv('GOOGLE_API_KEY'):
+        print("Please set your Google API key:")
+        print("Windows: $env:GOOGLE_API_KEY='your-api-key-here'")
+        print("Linux/Mac: export GOOGLE_API_KEY='your-api-key-here'")
         sys.exit(1)
     
     # Run the application
